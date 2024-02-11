@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <stdexcept>
 
-template <typename T> class Array {
+template <class T> class Array {
 private:
   size_t arr_size;
   T *arr;
@@ -20,29 +20,33 @@ public:
   size_t size() const;
 };
 
-template <typename T> Array<T>::Array() : arr_size(0) {
+template <typename T> Array<T>::Array() : arr_size(0), arr(NULL) {
   this->arr = new T[0]();
 }
-template <typename T> Array<T>::Array(unsigned int n) : arr_size(n) {
+
+template <typename T> Array<T>::Array(unsigned int n) : arr_size(n), arr(NULL) {
   this->arr = new T[n]();
 }
 
 template <typename T> Array<T>::Array(Array<T> const &rhs) {
+
+  this->arr = new T[rhs.arr_size]();
+  this->arr_size = rhs.arr_size;
+
   for (size_t i = 0; i < this->arr_size; i++) {
-    if (rhs.arr[i])
-      this->arr[i] = rhs.arr[i];
+    this->arr[i] = rhs.arr[i];
   }
 }
 
 template <typename T> Array<T> &Array<T>::operator=(Array<T> const &rhs) {
   if (this != &rhs) {
-    if (this->arr)
-      delete this->arr;
+    if (this->arr != NULL)
+      delete[] this->arr;
     this->arr = new T[rhs.arr_size]();
     this->arr_size = rhs.arr_size;
     for (size_t i = 0; i < this->arr_size; i++) {
       if (rhs.arr[i])
-        this->arr = rhs.arr[i];
+        this->arr[i] = rhs.arr[i];
     }
   }
   return *this;
@@ -63,6 +67,6 @@ template <typename T> T &Array<T>::operator[](size_t index) {
 }
 
 template <typename T> Array<T>::~Array() {
-  if (this->arr)
+  if (this->arr != NULL)
     delete[] this->arr;
 }
